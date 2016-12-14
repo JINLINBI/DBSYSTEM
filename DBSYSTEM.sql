@@ -1,0 +1,115 @@
+-- MySQL dump 10.13  Distrib 5.6.30, for debian-linux-gnu (x86_64)
+--
+-- Host: localhost    Database: DBSYSTEM
+-- ------------------------------------------------------
+-- Server version	5.6.30-1
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `GOOD`
+--
+
+DROP TABLE IF EXISTS `GOOD`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `GOOD` (
+  `GID` char(9) NOT NULL,
+  `UID` char(9) NOT NULL,
+  `GNAME` char(20) NOT NULL,
+  `GPRICE` float NOT NULL,
+  `GINFO` text,
+  PRIMARY KEY (`GID`),
+  KEY `UID` (`UID`),
+  CONSTRAINT `GOOD_ibfk_1` FOREIGN KEY (`UID`) REFERENCES `USER` (`UID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `GOOD`
+--
+
+LOCK TABLES `GOOD` WRITE;
+/*!40000 ALTER TABLE `GOOD` DISABLE KEYS */;
+INSERT INTO `GOOD` VALUES ('160000000','160000011','啊发动缝',33,'啊扽阿啊史扽'),('160000004','160000011','hellokitty',34,'来个圣诞借礼物吧!亲!!!'),('160000005','160000011','光盘',44,'哈哈,老司机都懂的东西,快来接吧!'),('160000006','160000011','大学物理',500,'大学物理书打包出售了!'),('160000007','160000011','你的名字电影票',28.9,'多出了一张票,谁要甩卖!');
+/*!40000 ALTER TABLE `GOOD` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `ORDERTABLE`
+--
+
+DROP TABLE IF EXISTS `ORDERTABLE`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ORDERTABLE` (
+  `OID` char(9) NOT NULL,
+  `UID` char(9) NOT NULL,
+  `GID` char(9) NOT NULL,
+  `ORDER_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`UID`,`GID`),
+  UNIQUE KEY `OID` (`OID`),
+  KEY `GID` (`GID`),
+  CONSTRAINT `ORDERTABLE_ibfk_1` FOREIGN KEY (`UID`) REFERENCES `USER` (`UID`),
+  CONSTRAINT `ORDERTABLE_ibfk_2` FOREIGN KEY (`GID`) REFERENCES `GOOD` (`GID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ORDERTABLE`
+--
+
+LOCK TABLES `ORDERTABLE` WRITE;
+/*!40000 ALTER TABLE `ORDERTABLE` DISABLE KEYS */;
+INSERT INTO `ORDERTABLE` VALUES ('160000001','160000002','160000005','2016-12-13 19:11:24');
+/*!40000 ALTER TABLE `ORDERTABLE` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `USER`
+--
+
+DROP TABLE IF EXISTS `USER`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `USER` (
+  `UID` char(9) NOT NULL,
+  `USERNAME` char(20) NOT NULL,
+  `USERTYPE` char(1) NOT NULL DEFAULT '3',
+  `PASSWD` char(100) NOT NULL,
+  `CONTACT` char(11) DEFAULT NULL,
+  `EMAIL` char(50) NOT NULL,
+  PRIMARY KEY (`UID`),
+  UNIQUE KEY `USERNAME` (`USERNAME`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `USER`
+--
+
+LOCK TABLES `USER` WRITE;
+/*!40000 ALTER TABLE `USER` DISABLE KEYS */;
+INSERT INTO `USER` VALUES ('160000001','admin','1','e74b2a84ad0d214da262a91c276b1c48c97973e0','15521135086','898141731@qq.com'),('160000002','jinlin','3','ae5d0818c68c1224f73eed6ccc0c136019590637','15521135086','898141731@qq.com'),('160000003','zhangji','3','c6cbbf14c5299acceed4e7542b81c6d9a8016956','4165465465','6546546@qq.com'),('160000005','fuckyou','3','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','buzhidao','564654654@qq.com'),('160000011','shangjia','2','e74b2a84ad0d214da262a91c276b1c48c97973e0','15521135086','898141731@qq.com'),('160000012','helloword','3','7c4a8d09ca3762af61e59520943dc26494f8941b','15521135086','6546546@qq.com'),('160000013','fsociety','3','7c4a8d09ca3762af61e59520943dc26494f8941b','15521135086','80239487@qq.com');
+/*!40000 ALTER TABLE `USER` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2016-12-14 21:09:27
