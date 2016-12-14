@@ -1,0 +1,10 @@
+<?php
+$host='localhost';
+$user_name='jinlin';
+$password='password';
+$database='DBSYSTEM';
+$conn=mysqli_connect($host,$user_name,$password,$database);
+if(!$conn){
+	die('数据库连接失败:'.mysql_error());
+}
+?>
