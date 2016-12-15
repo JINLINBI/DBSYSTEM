@@ -3,6 +3,7 @@ include 'conn.php';
 include 'checklevel.php';
 session_start();
 $msg='';
+$passwordmsg='';
 if(!empty($_SESSION['username'])){
 	$username=$_SESSION['username'];
 	$level=checklevel($conn,$username);

@@ -9,11 +9,40 @@ if(!empty($_SESSION['username'])){
 	$username=$_SESSION['username'];
 	$level=checklevel($conn,$username);
 	$login=true;
-	$result=mysqli_query($conn,"SELECT * FROM GOOD");
+	
 }
-else{
-	$result=mysqli_query($conn,"SELECT * FROM GOOD");
-}
+$result=mysqli_query($conn,"SELECT * FROM GOOD");
+
+/*
+<div id="myCarousel" class="carousel slide">
+    <!-- 轮播（Carousel）指标 -->
+    <ol class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#myCarousel" data-slide-to="1"></li>
+        <li data-target="#myCarousel" data-slide-to="2"></li>
+    </ol>   
+    <!-- 轮播（Carousel）项目 -->
+    <div class="carousel-inner" width="100%" height="600">
+        <div class="item active">
+            <img src="/public/img/kenan.jpeg" alt="First slide" width="100%" height="80%" >
+        </div>
+        <div class="item">
+            <img src="/public/img/may.jpg" alt="Second slide" width="100%" height="80%">
+        </div>
+        <div class="item">
+            <img src="/public/img/iphone.jpg" alt="Third slide" width="100%" height="80%">
+        </div>
+    </div>
+    <!-- 轮播（Carousel）导航 -->
+    <a class="carousel-control left" href="#myCarousel" 
+        data-slide="prev">&lsaquo;
+    </a>
+    <a class="carousel-control right" href="#myCarousel" 
+        data-slide="next">&rsaquo;
+    </a>
+</div>
+*/
+
 ?>
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -57,7 +86,6 @@ else{
             if($login){
 				if($level==3){
                     echo '<li > <a href="/public/php/order.php" >订单</a></li>';
-                    echo '<li > <a href="/public/php/collect.php" >收藏</a></li>';
 				}
 				else if($level==2){
                     echo '<li > <a href="/public/php/statistic.php" >统计</a></li>';
@@ -76,47 +104,27 @@ else{
 			          <li >  <a href="#register" data-toggle="modal" data-target="#register">注册</a></li>';
     
             }
-            ?>
+            ?>	
+			
 		  </ul>
+			<form action="/public/php/search.php" method="post" class="navbar-form navbar-right" >
+				<div class="form-group">
+				<input class="form-control" type="text" name="search" placeholder="Search">
+				<button class="btn btn-success" type="submit" name="submit" >搜索</button>
+				</div>
+			</form>
 		</div><!--/.nav-collapse -->
 	  </div>
 	</nav>
 	<!-- 页面主体内容 -->
 	<div class="container">
 			<div class="content">
-			  <div class="starter-template">
+			  <div class="jumbotron">
 				<!-- 这里做了修改，其他地方自由发挥 -->
 				<h1>欢迎<?php echo '<b>'.$username.'</b>';?>来到广工咸鱼网</h1>
 				<p class="lead">在这里,您可以买买买,也可以卖卖卖!</p>
 			  </div>
 			
-<div id="myCarousel" class="carousel slide">
-    <!-- 轮播（Carousel）指标 -->
-    <ol class="carousel-indicators">
-        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-        <li data-target="#myCarousel" data-slide-to="1"></li>
-        <li data-target="#myCarousel" data-slide-to="2"></li>
-    </ol>   
-    <!-- 轮播（Carousel）项目 -->
-    <div class="carousel-inner" width="100%" height="600">
-        <div class="item active">
-            <img src="/public/img/kenan.jpeg" alt="First slide" width="100%" height="80%">
-        </div>
-        <div class="item">
-            <img src="/public/img/may.jpg" alt="Second slide" width="100%" height="80%">
-        </div>
-        <div class="item">
-            <img src="/public/img/iphone.jpg" alt="Third slide" width="100%" height="80%">
-        </div>
-    </div>
-    <!-- 轮播（Carousel）导航 -->
-    <a class="carousel-control left" href="#myCarousel" 
-        data-slide="prev">&lsaquo;
-    </a>
-    <a class="carousel-control right" href="#myCarousel" 
-        data-slide="next">&rsaquo;
-    </a>
-</div>
 
 			<div class="goods" style="margin-top:30px">
 				
@@ -127,16 +135,13 @@ else{
 					<input type="text" name="gid" value="<?php echo $good_array['GID'];?>" class="hidden">
 					<label for="gname" >商品名:</label>
 					<input type="text" name="gname"  value="<?php echo $good_array['GNAME']?>" placeholder="<?php echo $good_array['GNAME']?>">
-					<label for="gprice" >商品价格:</label>
-					<input type="text" name="gprice" value="<?php echo $good_array['GPRICE'];?>" placeholder="<?php echo $good_array['GPRICE'];?>">
+					<label for="gprice" >商品价格(元):</label>
+					<input type="text" name="gprice" size="4" value="<?php echo $good_array['GPRICE'];?>" placeholder="<?php echo $good_array['GPRICE'];?>">
 					<label for="ginfo" >商品信息:</label>
-					<input type="text" name="ginfo"  value="<?php echo $good_array['GINFO']?>" placeholder="<?php echo $good_array['GINFO']?>">
+					<input type="text" name="ginfo" size="62" value="<?php echo $good_array['GINFO']?>" placeholder="<?php echo $good_array['GINFO']?>">
 					<button class="btn btn-info" type="submit" name="getcontact" value="true">联系方式</button>
 					<?php if($level==3){
-						echo '<button class="btn btn-primary" type="submit" name="order" >订购</button>';
-					}else if($level==1){
-						echo '<button class="btn btn-primary" type="submit" name="change" >修改</button>';
-						echo '<button class="btn btn-danger" type="submit" name="delete" >删除</button>';
+						echo '<button class="btn btn-primary" type="submit" name="order" value="true" >订购</button>';
 					}
 					?>
 				</div>	</form>
@@ -152,7 +157,7 @@ else{
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				<h4 class="modal-title" id="myModalLabel">注册</h4>
 			  </div>
-			  <form action="register.php" method="post" accept-charset="utf-8" class="form-horizontal">
+			  <form action="/public/php/register.php" method="post" accept-charset="utf-8" class="form-horizontal">
 				<div class="modal-body">
 
 				  <div class="form-group">
@@ -235,7 +240,7 @@ else{
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				<h4 class="modal-title" id="myModalLabel">登录</h4>
 			  </div>
-			  <form action="login.php" method="post" accept-charset="utf-8" class="form-horizontal">
+			  <form action="/public/php/login.php" method="post" accept-charset="utf-8" class="form-horizontal">
 				<div class="modal-body">
 				  <div class="form-group">
 					<label for="username" class="col-sm-4 control-label">昵称:</label>

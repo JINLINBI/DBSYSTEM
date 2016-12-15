@@ -3,20 +3,28 @@ include 'conn.php';
 include 'checklevel.php';
 session_start();
 $msg='';
-
+$goodmsg='';
+$ordermsg='';
 if(!empty($_SESSION['username'])){
 	$username=$_SESSION['username'];
-
 	$level=checklevel($conn,$username);
 	if($level!=1){
 		echo "请勿尝试非法绕过系统";
 		header("location:/index.php");
 	}
 	
-	if(!empty($_POST['delete'])){				
-		if(!empty($_POST['uid']) && empty($_POST['gid']) ){ 
+	if(!empty($_POST['delete'])){	
+		if(!empty($_POST['oid'])){
+			$oid=$_POST['oid'];
+			if(mysqli_query($conn,"DELETE FROM ORDERTABLE WHERE OID='$oid'")){
+				$ordermsg="删除成功!";
+			}else{
+				$ordermsg="删除失败!";
+			}
+		}						
+		else if(!empty($_POST['uid']) && empty($_POST['gid']) ){ 
 			$uid=$_POST['uid'];
-			if(mysqli_query($conn,"DELETE FROM USER WHERE UID='$uid'")){
+			if(mysqli_query($conn,"DELETE FROM USER WHERE UID='$uid'")){//删除用户		
 				$msg="删除成功!";
 			}else{
 				$msg="删除失败!";
@@ -25,14 +33,16 @@ if(!empty($_SESSION['username'])){
 		else if(!empty($_POST['gid'])){
 			$gid=$_POST['gid'];
 			if(mysqli_query($conn,"DELETE FROM GOOD WHERE GID='$gid'")){
-				$msg="删除成功!";
+				$goodmsg="删除成功!";
 			}else{
-				$msg="删除失败!请检查该商品是否被订购";
+				$goodmsg="删除失败!请检查该商品是否被订购";
 			}
 		}
+		
 	}
+
 	if(!empty($_POST['update'])){
-		if(!empty($_POST['uid']) && empty($_POST['gid']) ){ 
+		if(!empty($_POST['uid']) && empty($_POST['gid']) ){ 		//修改用户数据
 			$uid=$_POST['uid'];
 			$username=$_POST['username'];
 			$usertype=$_POST['usertype'];
@@ -44,28 +54,27 @@ if(!empty($_SESSION['username'])){
 				$msg="修改失败!";
 			}
 		}	
-		else if(!empty($_POST['gid'])){
+		else if(!empty($_POST['gid'])){					//删除商品
 			$gid=$_POST['gid'];
 			$uid=$_POST['uid'];
 			$gname=$_POST['gname'];
 			$gprice=$_POST['gprice'];
 			$ginfo=$_POST['ginfo'];
 			if(mysqli_query($conn,"UPDATE GOOD SET UID='$uid',GNAME='$gname',GPRICE='$gprice',GINFO='$ginfo' WHERE GID='$gid'")){
-				$msg="修改成功!";
+				$goodmsg="修改成功!";
 			}else{
-				$msg="修改失败!";
+				$goodmsg="修改失败!";
 			}
 		}
 	}
-	if(!empty($_POST['insert']) && $_POST['insert']=='user'){
+	if(!empty($_POST['insert']) && $_POST['insert']=='user' && !empty($_POST['username'])  && !empty($_POST['usertype'])){		//添加用户
 		$username=$_POST['username'];
 		$usertype=$_POST['usertype'];
 		$phone=$_POST['contact'];
 		$email=$_POST['email'];
 		$password=sha1("123456");
-		$result=mysqli_query($conn,"SELECT MAX(UID) FROM USER");
-		if($result->num_rows>0){
-			$row=$result->fetch_assoc();
+		if($result=mysqli_query($conn,"SELECT MAX(UID) FROM USER")){
+			$row=mysqli_fetch_array($result);
 			if((int)$row["MAX(UID)"]<160000000){
 				$max=(int)$row["MAX(UID)"]+160000000;
 			}else{
@@ -81,7 +90,7 @@ if(!empty($_SESSION['username'])){
 			$msg="添加成功,初始密码是'123456'!";
 		}		
 	}
-	else if(!empty($_POST['insert']) && $_POST['insert']=='good'){
+	else if(!empty($_POST['insert']) && $_POST['insert']=='good' && !empty($_POST['uid']) && !empty($_POST['gname'])  && !empty($_POST['gprice'])){
 		$uid=$_POST['uid'];
 		$gname=$_POST['gname'];
 		$gprice=$_POST['gprice'];
@@ -98,20 +107,31 @@ if(!empty($_SESSION['username'])){
 		}
 		$sql="INSERT INTO  GOOD VALUES('$id','$uid','$gname','$gprice','$ginfo')";
 		if(mysqli_query($conn,$sql)==false){
-			$msg="添加失败!";
+			$goodmsg="添加失败!";
 		}else{
-			$msg="添加成功!";
+			$goodmsg="添加成功!";
 		}
 	}
-	$sql="SELECT * FROM USER WHERE USERNAME='$username'";
-	$result=mysqli_query($conn,$sql);
-	$array=mysqli_fetch_array($result);
-
-	$user_sql="SELECT * FROM USER";
-	$user_result=mysqli_query($conn,$user_sql);
-
-	$good_sql="SELECT * FROM GOOD";
-	$good_result=mysqli_query($conn,$good_sql);
+	else if(!empty($_POST['insert']) && $_POST['insert']=='order' ){
+		$oid=$_POST['oid'];
+		$uid=$_POST['uid'];
+		$gid=$_POST['gid'];
+		if($result=mysqli_query($conn,"SELECT MAX(OID) FROM ORDERTABLE")){
+			$row=mysqli_fetch_array($result);
+			if((int)$row["MAX(OID)"]<160000000){
+				$max=(int)$row["MAX(OID)"]+160000000;
+			}else{
+				$max=(int)$row["MAX(OID)"];
+			}
+			$id=(string)($max+1);
+		}
+		$sql="INSERT INTO  ORDERTABLE(OID,UID,GID) VALUES('$id','$uid','$gid')";
+		if(mysqli_query($conn,$sql)==false){
+			$ordermsg="添加失败!";
+		}else{
+			$ordermsg="添加成功!";
+		}
+	}
 }
 else{
 	echo '请先登录!';
@@ -170,17 +190,20 @@ else{
 			<h3>个人信息</h3>
 				<span style="color:red"> <?php echo $msg;?></span>
 				<?php
+					$user_sql="SELECT * FROM USER";
+					$user_result=mysqli_query($conn,$user_sql);
 					while($user_array=mysqli_fetch_array($user_result) ){
 						if( $user_array['USERTYPE']=='1' )continue;
 				?><form action="/public/php/manage.php" method="post" >
 					<div class="form-group">
-						<input type="text" name="uid" value="<?php echo $user_array['UID'];?>" class="hidden">
+						<label for="uid" >用户号:</label>
+						<input type="text" name="uid" size='9' value="<?php echo $user_array['UID'];?>" placeholder="<?php echo $user_array['UID'];?>">
 						<label for="username" >用户姓名:</label>
-						<input type="text" name="username" placeholder="<?php echo $user_array['USERNAME'];?>" value="<?php echo $user_array['USERNAME'];?>">
+						<input type="text" name="username" size='10' placeholder="<?php echo $user_array['USERNAME'];?>" value="<?php echo $user_array['USERNAME'];?>">
 						<label for="email" >用户级别:</label>
-						<input type="text" name="usertype"  placeholder="<?php echo $user_array['USERTYPE']?>" value="<?php echo $user_array['USERTYPE']?>">
+						<input type="text" name="usertype" size='4'  placeholder="<?php echo $user_array['USERTYPE']?>" value="<?php echo $user_array['USERTYPE']?>">
 						<label for="contact" >联系方式:</label>
-						<input type="text" name="contact" placeholder="<?php echo $user_array['CONTACT']?>" value="<?php echo $user_array['CONTACT']?>">
+						<input type="text" name="contact" size='13' placeholder="<?php echo $user_array['CONTACT']?>" value="<?php echo $user_array['CONTACT']?>">
 						<label for="email" >E-mail:</label>
 						<input type="text" name="email"  placeholder="<?php echo $user_array['EMAIL']?>" value="<?php echo $user_array['EMAIL']?>">
 						<button class="btn btn-primary" type="submit" name="update" value="true">修改</button>
@@ -188,15 +211,14 @@ else{
 					</div>	
 				</form>
 				<?php }?>
-				</form action="/public/php/manage.php" method="post" >
+				<form action="/public/php/manage.php" method="post" >
 					<div class="form-group">
-						<input type="text" name="uid" class="hidden">
 						<label for="username" >用户姓名:</label>
-						<input type="text" name="username" >
+						<input type="text" name="username" size='10' >
 						<label for="email" >用户级别:</label>
-						<input type="text" name="usertype" >
+						<input type="text" name="usertype" size='4' >
 						<label for="contact" >联系方式:</label>
-						<input type="text" name="contact">
+						<input type="text" name="contact" size='13' >
 						<label for="email" >E-mail:</label>
 						<input type="text" name="email">
 						<button class="btn btn-default" type="submit" name="insert" value="user">添加</button>
@@ -205,37 +227,74 @@ else{
 			
 		</div>
 		<div >
-			<h3>修改密码</h3>
+			<h3 name="goodinfo">商品信息</h3>
+			<span style="color:red"><?php echo $goodmsg;?></span>
 			
 				<?php
+					$good_sql="SELECT * FROM GOOD";
+					$good_result=mysqli_query($conn,$good_sql);
 					while($good_array=mysqli_fetch_array($good_result)){
-				?><form action="/public/php/manage.php" method="post" >
+				?><form action="/public/php/manage.php?#goodinfo" method="post" >
 				<div class="form-group">
-					<input type="text" name="gid" value="<?php echo $good_array['GID'];?>" class="hidden">
+					<label for="gid" >商品号:</label>
+					<input type="text" name="gid" size='9' value="<?php echo $good_array['GID'];?>" >
 					<label for="uid" >商家号:</label>
-					<input type="text" name="uid" value="<?php echo $good_array['UID'];?>">
+					<input type="text" name="uid"  size='9' value="<?php echo $good_array['UID'];?>">
 					<label for="gname" >商品名:</label>
-					<input type="text" name="gname"  placeholder="<?php echo $good_array['GNAME']?>" value="<?php echo $good_array['GNAME']?>">
+					<input type="text" name="gname" size='8' placeholder="<?php echo $good_array['GNAME']?>" value="<?php echo $good_array['GNAME']?>">
 					<label for="gprice" >商品价格:</label>
-					<input type="text" name="gprice" placeholder="<?php echo $good_array['GPRICE'];?>" value="<?php echo $good_array['GPRICE']?>">
+					<input type="text" name="gprice"  size='4' placeholder="<?php echo $good_array['GPRICE'];?>" value="<?php echo $good_array['GPRICE']?>">
 					<label for="ginfo" >商品信息:</label>
 					<input type="text" name="ginfo"  placeholder="<?php echo $good_array['GINFO']?>" value="<?php echo $good_array['GINFO']?>">
 					<button class="btn btn-primary" type="submit" name="update" value="true" >修改</button>
 					<button class="btn btn-danger" type="submit" name="delete" value="true">删除</button>
 				</div>	</form>
 				<?php }?>
-			<form action="/public/php/manage.php" method="post" >
+			<form action="/public/php/manage.php?#goodinfo" method="post" >
 				<div class="form-group">
-					<input type="text" name="gid"  class="hidden">
+					<input type="text" name="gid" size='9' class="hidden">
 					<label for="uid" >商家号:</label>
-					<input type="text" name="uid" >
+					<input type="text" name="uid"  size='9'>
 					<label for="gname" >商品名:</label>
-					<input type="text" name="gname" >
+					<input type="text" name="gname"  size='9'>
 					<label for="gprice" >商品价格:</label>
-					<input type="text" name="gprice">
+					<input type="text" name="gprice"  size='4'>
 					<label for="ginfo" >商品信息:</label>
 					<input type="text" name="ginfo">
 					<button class="btn btn-default" type="submit" name="insert" value="good" >添加</button>
+				</div>	
+				
+			</form>
+		</div>
+
+		<div >
+			<h3 name="orderinfo">订单信息</h3>
+			<span style="color:red"><?php echo $ordermsg;?></span>
+			
+				<?php
+					$order_sql="SELECT * FROM ORDERTABLE,GOOD WHERE GOOD.GID=ORDERTABLE.GID";
+					$order_result=mysqli_query($conn,$order_sql);
+					while($order_array=mysqli_fetch_array($order_result)){
+				?><form action="/public/php/manage.php?#orderinfo" method="post" >
+				<div class="form-group">
+					<?php echo $order_array['GNAME'];?>
+					<label for="oid" >订单号:</label>
+					<input type="text" name="oid" value="<?php echo $order_array['OID'];?>">
+					<label for="uid" >买家号:</label>
+					<input type="text" name="uid" value="<?php echo $order_array['UID'];?>">
+					<label for="gname" >商品号:</label>
+					<input type="text" name="gid"  placeholder="<?php echo $order_array['GID']?>" value="<?php echo $order_array['GID'];?>">
+					<button class="btn btn-danger" type="submit" name="delete" value="true">删除</button>
+				</div>	</form>
+				<?php }?>
+			<form action="/public/php/manage.php?#orderinfo" method="post" >
+				<div class="form-group">
+					<input type="text" name="oid" class="hidden">
+					<label for="uid" >买家号:</label>
+					<input type="text" name="uid" >
+					<label for="gname" >商品名:</label>
+					<input type="text" name="gid" >
+					<button class="btn btn-default" type="submit" name="insert" value="order" >添加</button>
 				</div>	
 				
 			</form>

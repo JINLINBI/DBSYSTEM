@@ -1,5 +1,6 @@
 <?php
 include 'checklevel.php';
+include 'conn.php';
 $login=false;
 $level=0;
 $username='';
@@ -7,7 +8,23 @@ session_start();
 if(!empty($_SESSION['username'])){
 	$username=$_SESSION['username'];
 	$level=checklevel($conn,$username);
-	$login=true;
+	if($level==2 || $level==1){	
+		$login=true;
+	}
+	else{
+		header("location:/index.html");	
+	}	
+	if(!empty($_POST['delete'])){		
+		if(!empty($_POST['gid'])){
+			$gid=$_POST['gid'];
+			$uid=$_POST['uid'];
+			if(mysqli_query($conn,"DELETE FROM GOOD WHERE GID='$gid' AND UID='$uid'")){
+				$msg="删除成功!";
+			}else{
+				$msg="删除失败!请检查该商品是否被订购";
+			}
+		}
+	}
 }
 else{
 	echo '请先登录!';
@@ -60,7 +77,7 @@ else{
                     echo '<li > <a href="/public/php/self.php" >个人中心</a></li>';
 				}
 				else if($level==1){
-                    echo '<li class="active"> <a href="public/php/statistic.php" >统计</a></li>';
+                    echo '<li class="active"> <a href="/public/php/statistic.php" >统计</a></li>';
                     echo '<li > <a href="/public/php/self.php" >个人中心</a></li>';
                     echo '<li > <a href="/public/php/manage.php" >管理</a></li>';
 				}
@@ -74,15 +91,53 @@ else{
             ?>
 		  </ul>
 		</div><!--/.nav-collapse -->
+
+		
 	  </div>
 	</nav>
-	<footer class="footer">
+
 		<div class="container">
-		<p class="text-muted">
-		  <h2><a href="http://www.moyingliu.cn" title="www.moyingliu.cn" style="color: blue;">www.moyingliu.cn</a></h2>
-		</p>
-        </div>
-	</footer>
+			<?php if($level==2)echo "<h3>个人出售商品</h3>";
+				else if($level==1)echo "<h3>在售商品</h3>";
+?>
+			<span style="color:red"><?php echo $msg;?></span>
+			<?php if($level==2 && $result=mysqli_query($conn,"SELECT COUNT(*) FROM GOOD,USER WHERE USERNAME='$username' AND USER.UID=GOOD.UID")){
+					$array=mysqli_fetch_array($result);
+					echo "总件数:".$array["COUNT(*)"]."件";
+				}else if($level==1 && $result=mysqli_query($conn,"SELECT COUNT(*) FROM GOOD")){
+					$array=mysqli_fetch_array($result);
+					echo "总件数:".$array["COUNT(*)"]."件";
+					$result=mysqli_query($conn,"SELECT COUNT(*) FROM USER");
+					$array=mysqli_fetch_array($result);
+					echo "<h3>账户总数</h3>";
+					echo "总人数:".$array["COUNT(*)"]."人";
+					$result=mysqli_query($conn,"SELECT COUNT(*) FROM ORDERTABLE");
+					$array=mysqli_fetch_array($result);
+					echo "<h3>订单总数</h3>";
+					echo "总订单数:".$array["COUNT(*)"]."单";
+					
+				}
+			?>
+			<?php
+				$good_sql="SELECT * FROM GOOD,USER WHERE USERNAME='$username' AND GOOD.UID=USER.UID";
+				$good_result=mysqli_query($conn,$good_sql);
+				while( $level==2 && $good_array=mysqli_fetch_array($good_result)){
+			?><form action="/public/php/statistic.php" method="post" >
+			<div class="form-group">
+				<input type="text" name="gid" size='9' value="<?php echo $good_array['GID'];?>" class="hidden">
+				<input type="text" name="uid"  size='9' value="<?php echo $good_array['UID'];?>" class="hidden">
+				<label for="gname" >商品名:</label>
+				<input type="text" name="gname" size='12' placeholder="<?php echo $good_array['GNAME']?>" value="<?php echo $good_array['GNAME']?>">
+				<label for="gprice" >商品价格:</label>
+				<input type="text" name="gprice"  size='4' placeholder="<?php echo $good_array['GPRICE'];?>" value="<?php echo $good_array['GPRICE']?>">
+				<label for="ginfo" >商品信息:</label>
+				<input type="text" name="ginfo"  size='40' placeholder="<?php echo $good_array['GINFO']?>" value="<?php echo $good_array['GINFO']?>">
+				<button class="btn btn-danger" type="submit" name="delete" value="true">删除</button>
+			</div>	</form>
+			<?php }?>
+			
+
+		</div>
   </body>
     <script src="/public/js/jquery.min.js"></script>
 	<script src="/public/js/bootstrap.min.js"></script>

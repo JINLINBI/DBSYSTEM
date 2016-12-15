@@ -58,7 +58,6 @@ else{
 			<!-- 这里做了修改 -->
 			<li ><a href="/index.php">主页</a></li>
 			<li class="active"><a href="/public/php/order.php">订单</a></li>
-			<li ><a href="/public/php/collect.php">收藏</a></li>
             		<li > <a href="/public/php/logout.php" >注销</a></li>
 		  </ul>
 		</div><!--/.nav-collapse -->

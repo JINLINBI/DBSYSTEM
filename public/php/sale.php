@@ -107,6 +107,7 @@ else if(isset($isinsert)){
 }
 				?></label>
 				</div>
+				<h3>提交商品信息</h3>
 				<div class="form-group">
 					<label class="col-ms-4 control-label" for="goodname">商品名:</label>
 					<div class="col-ms-5">
@@ -134,13 +135,7 @@ else if(isset($isinsert)){
 			</form>
 		</div>
 	</div>
-	<footer class="footer">
-		<div class="container">
-		<p class="text-muted">
-		  <h2><a href="http://www.moyingliu.cn" title="www.moyingliu.cn" style="color: blue;">www.moyingliu.cn</a></h2>
-		</p>
-        </div>
-	</footer>
+
   </body>
     <script src="/public/js/jquery.min.js"></script>
 	<script src="/public/js/bootstrap.min.js"></script>
