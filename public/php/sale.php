@@ -1,41 +1,41 @@
-<?php
-include 'checklevel.php';
-include 'conn.php';
-include 'safe.php';
-$login=false;
-$level=0;
-$username='';
-session_start();
-if(!empty($_SESSION['username'])){
-	$username=$_SESSION['username'];
-	$level=checklevel($conn,$username);
-	$login=true;
+<?php			///该文件实现商家刊登商品信息
+include 'checklevel.php';	//引入查询用户类型的函数
+include 'conn.php';		//引入数据库连接文件
+include 'safe.php';		//引入安全过滤函数
+$login=false;			//登录状态变量
+$level=0;			//用户类型变量
+$username='';			//用户名
+session_start();		//开始会话
+if(!empty($_SESSION['username'])){	//判断是否登录
+	$username=$_SESSION['username'];	//提取用户名
+	$level=checklevel($conn,$username);	//查询用户类型
+	$login=true;				//登录
 }else{
 	echo "您还没有登录,请先登录在操作!";	
 	header("location:/index.php");
 }
-if(!empty($_POST['goodname']) && !empty($_POST['goodprice']) && !empty($_POST['goodinfo'])){
-	$goodname=safe_string($_POST['goodname']);
-	$goodprice=safe_string($_POST['goodprice']);
-	$goodinfo=safe_string($_POST['goodinfo']);
+if(!empty($_POST['goodname']) && !empty($_POST['goodprice']) && !empty($_POST['goodinfo'])){ //检查商家发普的信息是否全都提交
+	$goodname=safe_string($_POST['goodname']);		//过滤
+	$goodprice=safe_string($_POST['goodprice']);		//..
+	$goodinfo=safe_string($_POST['goodinfo']);		//..
 
 
-	$sql="SELECT UID FROM USER WHERE USERNAME='$username'";
-	$uid_result=mysqli_query($conn,$sql);
-	$uid_array=mysqli_fetch_array($uid_result);
-	$uid=$uid_array['UID'];
+	$sql="SELECT UID FROM USER WHERE USERNAME='$username'";	
+	$uid_result=mysqli_query($conn,$sql);		//查询用户信息
+	$uid_array=mysqli_fetch_array($uid_result);	//提取row(元组)
+	$uid=$uid_array['UID'];				//得到商家的uid
 
-	$gid_result=mysqli_query($conn,"SELECT MAX(GID) FROM GOOD ");
-	$gid_array=mysqli_fetch_array($gid_result);
-	$gid=(string) (1+(int)($gid_array['MAX(GID)']));
+	$gid_result=mysqli_query($conn,"SELECT MAX(GID) FROM GOOD ");	//查询商品信息
+	$gid_array=mysqli_fetch_array($gid_result);		
+	$gid=(string) (1+(int)($gid_array['MAX(GID)']));	//得到商品的gid
 
 
-	$insert="INSERT INTO GOOD VALUES('$gid','$uid','$goodname','$goodprice','$goodinfo')";
+	$insert="INSERT INTO GOOD VALUES('$gid','$uid','$goodname','$goodprice','$goodinfo')"; 	//构造商家发布商品的sql语句
 	
-	if(mysqli_query($conn,$insert)){
-		$isinsert=true;
+	if(mysqli_query($conn,$insert)){	
+		$isinsert=true;		//成功
 	}else{
-		$isinsert=false;
+		$isinsert=false;	//失败
 	}
 }
 ?>
@@ -99,14 +99,15 @@ if(!empty($_POST['goodname']) && !empty($_POST['goodprice']) && !empty($_POST['g
 		<div>
 			<form action="/public/php/sale.php" method="post">
 				<div class="form-group">
-				<label class="col-ms-8 control-label" style="color:red" ><?php
+				<label class="col-ms-8 control-label" style="color:red" >
+<?php
 if(isset($isinsert) && $isinsert==true){
-	echo "<h4>提交商品信息成功!</h4>";
+	echo "<h4>提交商品信息成功!</h4>"; 	//成功时打印
 }
 else if(isset($isinsert)){
 	echo "<h4>提交商品信息失败!</h4>";
 }
-				?></label>
+?></label>
 				</div>
 				<h3>提交商品信息</h3>
 				<div class="form-group">

@@ -1,4 +1,4 @@
-<?php
+<?php		//该文件实现搜索功能
 include 'checklevel.php';
 include 'conn.php';
 include 'safe.php';
@@ -6,13 +6,13 @@ $login=false;
 $level=0;
 $username='';
 session_start();
-if(!empty($_SESSION['username'])){
-	$username=$_SESSION['username'];
+if(!empty($_SESSION['username'])){		//判断是否登录
+	$username=$_SESSION['username'];	
 	$level=checklevel($conn,$username);
 	$login=true;
 	
 }
-$result=mysqli_query($conn,"SELECT * FROM GOOD");
+//$result=mysqli_query($conn,"SELECT * FROM GOOD");		
 
 /*
 <div id="myCarousel" class="carousel slide">
@@ -123,10 +123,11 @@ $result=mysqli_query($conn,"SELECT * FROM GOOD");
 		<div >
 			<table class="table table-condensed table-bordered">
 			<?php
-				$search=safe_string($_POST['search']);
-				$result=mysqli_query($conn,"SELECT SUM(*) FROM GOOD WHERE GNAME LIKE '%$search%' OR GPRICE LIKE '%$search%' OR GINFO LIKE '%$search%'");
-				if($result && $sum=mysqli_fetch_array($result)){
-					echo "<h3>搜索到".$sum['SUM(*)']."件商品.</h3>";
+				if(!empty($_POST['search'])){		//判断提交搜索是不是空
+				$search=safe_string($_POST['search']);	//过滤
+				$result=mysqli_query($conn,"SELECT SUM(*) FROM GOOD WHERE GNAME LIKE '%$search%' OR GPRICE LIKE '%$search%' OR GINFO LIKE '%$search%'");			//查询数据库商品数目
+				if($result && $sum=mysqli_fetch_array($result)){	//判断是否查询到商品
+					echo "<h3>搜索到".$sum['SUM(*)']."件商品.</h3>";	//
 				}
 
 			?>
@@ -140,7 +141,7 @@ $result=mysqli_query($conn,"SELECT * FROM GOOD");
 				<td><?php echo $array['GPRICE']?></td>
 				<td><?php echo $array['GINFO']?></td>
 				</tr>
-			<?php }?>
+			<?php }}?>
 			</table>
 		</div>
 	</div>

@@ -1,68 +1,52 @@
-<?php
-include 'conn.php';
-include 'checklevel.php';
-session_start();
-$msg='';
-$passwordmsg='';
-if(!empty($_SESSION['username'])){
-	$username=$_SESSION['username'];
-	$level=checklevel($conn,$username);
-	if($level!=1 && $level!=2){
+<?php		//该文实现修改密码和修改个人信息的功能
+include 'conn.php';		//连接数据库文件
+include 'checklevel.php';	//检查用户类型文件
+session_start();		//开始会话
+$msg='';			//需打印修改个人信息的变量
+$passwordmsg='';		//提示修改密码是否成功用到的变量
+if(!empty($_SESSION['username'])){		//判断是否登录
+	$username=$_SESSION['username'];	//提取用户名
+	$level=checklevel($conn,$username);	//检查用户类型
+	if($level!=1 && $level!=2){		//判断是否是管理员或商家
 		echo "请勿尝试非法绕过系统";
 		header("location:/index.php");
 	}
-	if(!empty($_POST['contact']) || !empty($_POST['email'])){
-		$username=$_SESSION['username'];
-		$email=$_POST['email'];
-		$contact=$_POST['contact'];
-		$level=checklevel($conn,$username);
-		if($level==3){
-			echo "请勿尝试非法绕过系统";
-			header("location:/pubic/php/self.php");
-		}
-	//	$sql="SELECT * FROM USER WHERE USERNAME='$username'";
-	//	$result=mysqli_query($conn,$sql);
-	//	$array=mysqli_fetch_array($result);
-		if(mysqli_query($conn,"UPDATE USER SET CONTACT='$contact',EMAIL='$email' WHERE USERNAME='$username'")){
+	if(!empty($_POST['contact']) || !empty($_POST['email'])){	//判断提交的个人信息是否为空
+		$username=$_SESSION['username'];			//用户名
+		$email=$_POST['email'];					//email
+		$contact=$_POST['contact'];				//手机号
+		if(mysqli_query($conn,"UPDATE USER SET CONTACT='$contact',EMAIL='$email' WHERE USERNAME='$username'")){		//数据库查询语句
 				$msg="修改成功!";
 		}else{
-			$msg="修改失败!";
+				$msg="修改失败!";
 		}
 
 	}
-		
-	if(!empty($_POST['oldpassword']) && !empty($_POST['newpassword']) && !empty($_POST['comfirmpassword']) && $_POST['newpassword']==$_POST['comfirmpassword']){
-	$username=$_SESSION['username'];
-	$oldpassword=$_POST['oldpassword'];
-	$level=checklevel($conn,$username);
-	if($level==3){
-		echo "请勿尝试非法绕过系统";
-		header("location:/index.php");
-	}
-	$sql="SELECT * FROM USER WHERE USERNAME='$username'";
+	if(!empty($_POST['oldpassword']) && !empty($_POST['newpassword']) && !empty($_POST['comfirmpassword']) && $_POST['newpassword']==$_POST['comfirmpassword']){	//判断提交的参数是否有空
+	$username=$_SESSION['username'];	//用户名
+	$oldpassword=$_POST['oldpassword'];	//密码
+	$sql="SELECT * FROM USER WHERE USERNAME='$username'";	//查询用户的信息
 	$result=mysqli_query($conn,$sql);
 	$array=mysqli_fetch_array($result);
-	if($array['PASSWD']==sha1($oldpassword)){
-		$newpassword=$_POST['newpassword'];
+	if($array['PASSWD']==sha1($oldpassword)){		//判断提交的旧密码和数据库中的记录是否相同
+		$newpassword=$_POST['newpassword'];		
 		$newpassword=sha1($newpassword);
-		if(mysqli_query($conn,"UPDATE USER SET PASSWD='$newpassword' WHERE USERNAME='$username'")){
-			$passwdmsg="修改成功!";
-			//header("location:/public/php/self.php");			
+		if(mysqli_query($conn,"UPDATE USER SET PASSWD='$newpassword' WHERE USERNAME='$username'")){	//更改密码的sql语句查询
+			$passwdmsg="修改成功!";		
 		}
 	}else{
 		$passwdmsg="原密码错误!";
-		//header("location:/public/php/self.php");
 	}
 
 }
 
 	$sql="SELECT * FROM USER WHERE USERNAME='$username'";
 	$result=mysqli_query($conn,$sql);
-	$array=mysqli_fetch_array($result);
+	$array=mysqli_fetch_array($result);	//查询用户信息,在下面的表单用到
 }
 else{
 	echo '请先登录!';
-	header("location:/index.php");
+	header("location:/index.php");		//重定向到主页
 }
 ?>
 <!DOCTYPE html>

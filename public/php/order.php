@@ -2,17 +2,17 @@
 include 'conn.php';
 include 'checklevel.php';
 session_start();
-if(!empty($_SESSION['username'])){
-	$username=$_SESSION['username'];
+if(!empty($_SESSION['username'])){	//判断是否登录
+	$username=$_SESSION['username'];	//提取用户名
 
-	$level=checklevel($conn,$username);
-	if($level!=3){
+	$level=checklevel($conn,$username);	//判断用户类型
+	if($level!=3){				//检查是否其他用户非法提交数据
 		echo "请勿尝试非法绕过系统";
 		header("location:/index.php");
 	}
 
 	$sql="SELECT * FROM USER U1,ORDERTABLE,GOOD,USER U2 WHERE U1.USERNAME='$username' AND U1.UID=ORDERTABLE.UID AND ORDERTABLE.GID=GOOD.GID AND GOOD.UID=U2.UID";
-	$result=mysqli_query($conn,$sql);
+	$result=mysqli_query($conn,$sql);	//连接查询数据库三个表
 }
 else{
 	echo '请先登录!';
@@ -89,13 +89,6 @@ else{
 		
 	</div>
 	<!-- 网页底部 -->
-	<footer class="footer">
-		<div class="container">
-		<p class="text-muted">
-		  <h2><a href="http://www.moyingliu.cn" title="www.moyingliu.cn" style="color: blue;">www.moyingliu.cn</a></h2>
-		</p>
-        </div>
-	</footer>
   </body>
     <script src="/public/js/jquery.min.js"></script>
 	<script src="/public/js/bootstrap.min.js"></script>

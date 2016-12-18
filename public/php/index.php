@@ -1,17 +1,17 @@
 <?php
-include 'public/php/checklevel.php';
-include 'public/php/conn.php';
-$login=false;
-$level=0;
-$username='';
-session_start();
-if(!empty($_SESSION['username'])){
-	$username=$_SESSION['username'];
-	$level=checklevel($conn,$username);
-	$login=true;
+include 'public/php/checklevel.php';		//引入文件
+include 'public/php/conn.php';			//引入数据库连接
+$login=false;					//登录状态记录变量
+$level=0;					//用户类型标记1为管理员,2为商家,3为普通用户
+$username='';					//用户姓名
+session_start();				//开启会话
+if(!empty($_SESSION['username'])){		//判断是否登陆
+	$username=$_SESSION['username'];	//提取用户名
+	$level=checklevel($conn,$username);	//判断用户类型,记录在$level变量上
+	$login=true;				//将登录变量改为true,
 	
 }
-$result=mysqli_query($conn,"SELECT * FROM GOOD");
+$result=mysqli_query($conn,"SELECT * FROM GOOD");	// 查询数据库的商品表单,
 
 /*
 <div id="myCarousel" class="carousel slide">
@@ -82,25 +82,25 @@ $result=mysqli_query($conn,"SELECT * FROM GOOD");
 		  <ul class="nav navbar-nav">
 			<!-- 这里做了修改 -->
 			<li class="active"><a href="/index.php">主页</a></li>
-            <?php
-            if($login){
-				if($level==3){
-                    echo '<li > <a href="/public/php/order.php" >订单</a></li>';
+            <?php			
+            if($login){					//判断是否登录
+				if($level==3){		//普通用户时
+                    			echo '<li > <a href="/public/php/order.php" >订单</a></li>';
 				}
-				else if($level==2){
-                    echo '<li > <a href="/public/php/statistic.php" >统计</a></li>';
-                    echo '<li > <a href="/public/php/sale.php" >卖咸鱼</a></li>';
-                    echo '<li > <a href="/public/php/self.php" >个人中心</a></li>';
+				else if($level==2){	//商家时
+				    echo '<li > <a href="/public/php/statistic.php" >统计</a></li>';
+				    echo '<li > <a href="/public/php/sale.php" >卖咸鱼</a></li>';
+				    echo '<li > <a href="/public/php/self.php" >个人中心</a></li>';
+				}	
+				else if($level==1){	//登录用户为管理员时
+				    echo '<li > <a href="/public/php/statistic.php" >统计</a></li>';
+				    echo '<li > <a href="/public/php/self.php" >个人中心</a></li>';
+				    echo '<li > <a href="/public/php/manage.php" >管理</a></li>';
 				}
-				else if($level==1){
-                    echo '<li > <a href="/public/php/statistic.php" >统计</a></li>';
-                    echo '<li > <a href="/public/php/self.php" >个人中心</a></li>';
-                    echo '<li > <a href="/public/php/manage.php" >管理</a></li>';
-				}
-                    echo '<li > <a href="public/php/logout.php" >注销</a></li>';
+               			    echo '<li > <a href="public/php/logout.php" >注销</a></li>';
             }
-            else{
-                echo '<li > <a href="#login" data-toggle="modal" data-target="#login">登录</a></li>			
+            else{		//还没登录的话,打印登录按钮和注册按钮
+	            echo '<li > <a href="#login" data-toggle="modal" data-target="#login">登录</a></li>			
 			          <li >  <a href="#register" data-toggle="modal" data-target="#register">注册</a></li>';
     
             }
@@ -131,7 +131,7 @@ $result=mysqli_query($conn,"SELECT * FROM GOOD");
 
 			<div class="goods" style="margin-top:30px">
 				
-				<?php
+				<?php		//循环打印商品列表
 					while($good_array=mysqli_fetch_array($result)){
 				?><form action="/public/php/indexpro.php" method="post" >
 				<div class="form-group">
