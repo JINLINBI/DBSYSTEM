@@ -1,6 +1,7 @@
 <?php
 include 'checklevel.php';
 include 'conn.php';
+include 'safe.php';
 $login=false;
 $level=0;
 $username='';
@@ -14,9 +15,9 @@ if(!empty($_SESSION['username'])){
 	header("location:/index.php");
 }
 if(!empty($_POST['goodname']) && !empty($_POST['goodprice']) && !empty($_POST['goodinfo'])){
-	$goodname=$_POST['goodname'];
-	$goodprice=$_POST['goodprice'];
-	$goodinfo=$_POST['goodinfo'];
+	$goodname=safe_string($_POST['goodname']);
+	$goodprice=safe_string($_POST['goodprice']);
+	$goodinfo=safe_string($_POST['goodinfo']);
 
 
 	$sql="SELECT UID FROM USER WHERE USERNAME='$username'";

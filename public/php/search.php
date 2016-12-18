@@ -1,6 +1,7 @@
 <?php
-include 'public/php/checklevel.php';
-include 'public/php/conn.php';
+include 'checklevel.php';
+include 'conn.php';
+include 'safe.php';
 $login=false;
 $level=0;
 $username='';
@@ -118,7 +119,31 @@ $result=mysqli_query($conn,"SELECT * FROM GOOD");
 	  </div>
 	</nav>
 	<!-- 页面主体内容 -->
+	<div class="container">
+		<div >
+			<table class="table table-condensed table-bordered">
+			<?php
+				$search=safe_string($_POST['search']);
+				$result=mysqli_query($conn,"SELECT SUM(*) FROM GOOD WHERE GNAME LIKE '%$search%' OR GPRICE LIKE '%$search%' OR GINFO LIKE '%$search%'");
+				if($result && $sum=mysqli_fetch_array($result)){
+					echo "<h3>搜索到".$sum['SUM(*)']."件商品.</h3>";
+				}
 
+			?>
+			<tr><th>商品名</th><th>商品价格</th><th>商品信息</th></tr>
+			<?php
+				$result=mysqli_query($conn,"SELECT * FROM GOOD WHERE GNAME LIKE '%$search%'  OR GPRICE LIKE '%$search%' OR GINFO LIKE '%$search%'");
+				while($array=mysqli_fetch_array($result)){
+				?>
+				<tr>
+				<td><?php echo $array['GNAME']?></td>
+				<td><?php echo $array['GPRICE']?></td>
+				<td><?php echo $array['GINFO']?></td>
+				</tr>
+			<?php }?>
+			</table>
+		</div>
+	</div>
 
   </body>
 	<script src="/public/js/jquery.min.js"></script>

@@ -1,9 +1,11 @@
 <?php
 include 'checklevel.php';
 include 'conn.php';
+include 'safe.php';
 $login=false;
 $level=0;
 $username='';
+$msg="";
 session_start();
 if(!empty($_SESSION['username'])){
 	$username=$_SESSION['username'];
@@ -16,8 +18,8 @@ if(!empty($_SESSION['username'])){
 	}	
 	if(!empty($_POST['delete'])){		
 		if(!empty($_POST['gid'])){
-			$gid=$_POST['gid'];
-			$uid=$_POST['uid'];
+			$gid=safe_string($_POST['gid']);
+			$uid=safe_string($_POST['uid']);
 			if(mysqli_query($conn,"DELETE FROM GOOD WHERE GID='$gid' AND UID='$uid'")){
 				$msg="删除成功!";
 			}else{
@@ -114,7 +116,7 @@ else{
 					$result=mysqli_query($conn,"SELECT COUNT(*) FROM ORDERTABLE");
 					$array=mysqli_fetch_array($result);
 					echo "<h3>订单总数</h3>";
-					echo "总订单数:".$array["COUNT(*)"]."单";
+					echo "总订单 数:".$array["COUNT(*)"]."单";
 					
 				}
 			?>

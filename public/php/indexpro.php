@@ -1,6 +1,7 @@
 <?php
 include 'conn.php';
 include 'checklevel.php';
+include 'safe.php';
 session_start();
 if(!empty($_SESSION['username']) && !empty($_POST['order']) && !empty($_POST['gid'])){
 	$username=$_SESSION['username'];
@@ -33,10 +34,8 @@ if(!empty($_SESSION['username']) && !empty($_POST['order']) && !empty($_POST['gi
 	}
 }
 if(!empty($_POST['getcontact']) && !empty($_POST['gid'])){
-	$gid=$_POST['gid'];
-	$gname=$_POST['gname'];
-	$gprice=$_POST['gprice'];
-	$ginfo=$_POST['ginfo'];
+	//$gid=$_POST['gid'];
+	$gid=safe_string($_POST['gid']);
 	if($result=mysqli_query($conn,"SELECT USERNAME,CONTACT,EMAIL FROM USER,GOOD WHERE GOOD.GID='$gid' AND USER.UID=GOOD.UID")){
 		$array=mysqli_fetch_array($result);
 		if(empty($array['CONTACT']))

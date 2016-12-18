@@ -1,6 +1,7 @@
 <?php
 include 'conn.php';
 include 'checklevel.php';
+include 'safe.php';
 session_start();
 $msg='';
 $goodmsg='';
@@ -44,9 +45,9 @@ if(!empty($_SESSION['username'])){
 	if(!empty($_POST['update'])){
 		if(!empty($_POST['uid']) && empty($_POST['gid']) ){ 		//修改用户数据
 			$uid=$_POST['uid'];
-			$username=$_POST['username'];
-			$usertype=$_POST['usertype'];
-			$contact=$_POST['contact'];
+			$username=safe_string($_POST['username']);
+			$usertype=safe_string($_POST['usertype']);
+			$contact=safe_string($_POST['contact']);
 			$email=$_POST['email'];
 			if(mysqli_query($conn,"UPDATE USER SET USERNAME='$username',USERTYPE='$usertype',CONTACT='$contact',EMAIL='$email' WHERE UID='$uid'")){
 				$msg="修改成功!";
@@ -275,9 +276,9 @@ else{
 					$order_sql="SELECT * FROM ORDERTABLE,GOOD WHERE GOOD.GID=ORDERTABLE.GID";
 					$order_result=mysqli_query($conn,$order_sql);
 					while($order_array=mysqli_fetch_array($order_result)){
-				?><form action="/public/php/manage.php?#orderinfo" method="post" >
+				?><form action="/public/php/manage.php" method="post" >
 				<div class="form-group">
-					<?php echo $order_array['GNAME'];?>
+					<?php echo "".$order_array['GNAME'];?>
 					<label for="oid" >订单号:</label>
 					<input type="text" name="oid" value="<?php echo $order_array['OID'];?>">
 					<label for="uid" >买家号:</label>
@@ -287,7 +288,7 @@ else{
 					<button class="btn btn-danger" type="submit" name="delete" value="true">删除</button>
 				</div>	</form>
 				<?php }?>
-			<form action="/public/php/manage.php?#orderinfo" method="post" >
+			<form action="/public/php/manage.php" method="post" >
 				<div class="form-group">
 					<input type="text" name="oid" class="hidden">
 					<label for="uid" >买家号:</label>
