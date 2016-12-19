@@ -101,11 +101,6 @@ if(!empty($_SESSION['username'])){		//判断是否登录
 				}
                     echo '<li > <a href="public/php/logout.php" >注销</a></li>';
             }
-            else{
-                echo '<li > <a href="#login" data-toggle="modal" data-target="#login">登录</a></li>			
-			          <li >  <a href="#register" data-toggle="modal" data-target="#register">注册</a></li>';
-    
-            }
             ?>	
 			
 		  </ul>
@@ -123,25 +118,32 @@ if(!empty($_SESSION['username'])){		//判断是否登录
 		<div >
 			<table class="table table-condensed table-bordered">
 			<?php
-				if(!empty($_POST['search'])){		//判断提交搜索是不是空
-				$search=safe_string($_POST['search']);	//过滤
-				$result=mysqli_query($conn,"SELECT SUM(*) FROM GOOD WHERE GNAME LIKE '%$search%' OR GPRICE LIKE '%$search%' OR GINFO LIKE '%$search%'");			//查询数据库商品数目
-				if($result && $sum=mysqli_fetch_array($result)){	//判断是否查询到商品
-					echo "<h3>搜索到".$sum['SUM(*)']."件商品.</h3>";	//
-				}
+				if(!empty($_POST['search']) && $search=safe_string($_POST['search'])){		//判断提交搜索是不是空
+					$result=mysqli_query($conn,"SELECT COUNT(*) FROM GOOD WHERE GNAME LIKE '%$search%' OR GPRICE LIKE '%$search%' OR GINFO LIKE '%$search%'");			//查询数据库商品数目
+					if($result && $sum=mysqli_fetch_array($result)){	//判断是否查询到商品
+						echo "<h3>搜索到".$sum['COUNT(*)']."件商品.</h3>";	//
+					}
+					else {
+						echo "<h3>搜索到0件商品!</h3>";
+					}
 
-			?>
-			<tr><th>商品名</th><th>商品价格</th><th>商品信息</th></tr>
-			<?php
-				$result=mysqli_query($conn,"SELECT * FROM GOOD WHERE GNAME LIKE '%$search%'  OR GPRICE LIKE '%$search%' OR GINFO LIKE '%$search%'");
-				while($array=mysqli_fetch_array($result)){
 				?>
-				<tr>
-				<td><?php echo $array['GNAME']?></td>
-				<td><?php echo $array['GPRICE']?></td>
-				<td><?php echo $array['GINFO']?></td>
-				</tr>
-			<?php }}?>
+				<tr><th>商品名</th><th>商品价格</th><th>商品信息</th></tr>
+				<?php
+					$result=mysqli_query($conn,"SELECT * FROM GOOD WHERE GNAME LIKE '%$search%'  OR GPRICE LIKE '%$search%' OR GINFO LIKE '%$search%'");
+					while($array=mysqli_fetch_array($result)){
+					?>
+					<tr>
+					<td><?php echo $array['GNAME']?></td>
+					<td><?php echo $array['GPRICE']?></td>
+					<td><?php echo $array['GINFO']?></td>
+					</tr>
+			<?php }}
+					else{
+						echo "请输入搜索内容!";
+					}
+?>
+
 			</table>
 		</div>
 	</div>

@@ -21,3 +21,9 @@
       alert("注册失败!");
     }
   }
+  function changing(){
+	//document.getElementById("codeimg").src="/public/php/captcha.php?"+Math.random();
+	var codelink="/public/php/captcha.php?"+Math.random();
+	document.getElementById("codeimg1").src=""+codelink;
+	document.getElementById("codeimg2").src=""+codelink;
+}

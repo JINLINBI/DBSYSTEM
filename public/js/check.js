@@ -1,13 +1,13 @@
 $(document).ready(function() {
     var nameFlag = true;    //准备一个用户名的可用性标识
-    $('#username').keyup(function() {    //用户输入一个字符就触发响应
+    $('#re-username').keyup(function() {    //用户输入一个字符就触发响应
         var length = $(this).val().length; 
         if ( length >= 2 && length <= 20 ) {    //判断用户名长度 2至20位之间
             //发送用户名，检测的类型为 name
             $.post('##', {username: $(this).val(),type:'name'}, function(data, textStatus, xhr) {
                 if (textStatus == 'success') {
                     if (data == '1') {    //如果后台返回1，则表示此用户名已被注册
-                        $('#dis_un').text('UserName is already registered');    //给出错误提示
+                        $('#dis_un').text('用户名已经被注册了!');    //给出错误提示
                         nameFlag = false;
                     }else{    //用户名可以使用
                         $('#dis_un').text('');    //去掉错误提示文字
@@ -23,7 +23,7 @@ $(document).ready(function() {
 $('#remail').blur(function() {    //注册邮箱失去焦点才检测
         if ($(this).val() != '') {    //输入不为空就检测
             var reg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;    //正则表达式判断邮箱格式
-            if (reg.test($(this).val())) {    //是邮箱格式
+	    if (reg.test($(this).val())) {    //是邮箱格式
                 $.post('##', {email: $(this).val(),type: 'email'}, function(data, textStatus, xhr) {
                     if (textStatus == 'success') {
                         if (data == '1') {    //后台返回1 表示已被注册
@@ -74,9 +74,13 @@ $('#password').blur(function(){    //密码检测
     });
 	    $('#reg').click(function() {
         if (!(nameFlag && emailFlag && pwdFlag)) {    //用户名标识 && 邮箱标识 && 密码标识
-            alert('Please check page info!');
+            alert('请检查输入是否满足要求!');
             return false;
         }
     });
-
+	//var capsLockKey = e.keyCode ? e.keyCode : e.which;
+	//var shifKey = e.shiftKey ? e.shiftKey:((capsLockKey == 15) ? true : false);
+	//if(((capsLockKey >= 64 && capsLockKey <= 90) && !shifKey)||((capsLockKey >= 97 && capsLockKey <= 122) && shifKey)){
+    //	alert("请注意,大写锁定键已开启!");
+	//}
 });

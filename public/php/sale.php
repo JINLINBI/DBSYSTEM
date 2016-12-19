@@ -15,9 +15,9 @@ if(!empty($_SESSION['username'])){	//判断是否登录
 	header("location:/index.php");
 }
 if(!empty($_POST['goodname']) && !empty($_POST['goodprice']) && !empty($_POST['goodinfo'])){ //检查商家发普的信息是否全都提交
-	$goodname=safe_string($_POST['goodname']);		//过滤
-	$goodprice=safe_string($_POST['goodprice']);		//..
-	$goodinfo=safe_string($_POST['goodinfo']);		//..
+	$goodname=($_POST['goodname']);		//过滤
+	$goodprice=($_POST['goodprice']);		//..
+	$goodinfo=($_POST['goodinfo']);		//..
 
 
 	$sql="SELECT UID FROM USER WHERE USERNAME='$username'";	

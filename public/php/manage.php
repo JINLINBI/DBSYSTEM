@@ -13,7 +13,6 @@ if(!empty($_SESSION['username'])){
 		echo "请勿尝试非法绕过系统";
 		header("location:/index.php");
 	}
-	
 	if(!empty($_POST['delete'])){	
 		if(!empty($_POST['oid'])){
 			$oid=$_POST['oid'];
@@ -200,11 +199,11 @@ else{
 						<label for="uid" >用户号:</label>
 						<input type="text" name="uid" size='9' value="<?php echo $user_array['UID'];?>" placeholder="<?php echo $user_array['UID'];?>">
 						<label for="username" >用户姓名:</label>
-						<input type="text" name="username" size='10' placeholder="<?php echo $user_array['USERNAME'];?>" value="<?php echo $user_array['USERNAME'];?>">
+						<input type="text" name="username" size='10' placeholder="<?php echo htmlspecialchars($user_array['USERNAME'])?>" value="<?php echo htmlspecialchars($user_array['USERNAME'])?>">
 						<label for="email" >用户级别:</label>
-						<input type="text" name="usertype" size='4'  placeholder="<?php echo $user_array['USERTYPE']?>" value="<?php echo $user_array['USERTYPE']?>">
+						<input type="text" name="usertype" size='4'  placeholder="<?php echo htmlspecialchars($user_array['USERTYPE'])?>" value="<?php echo htmlspecialchars($user_array['USERTYPE'])?>">
 						<label for="contact" >联系方式:</label>
-						<input type="text" name="contact" size='13' placeholder="<?php echo $user_array['CONTACT']?>" value="<?php echo $user_array['CONTACT']?>">
+						<input type="text" name="contact" size='13' placeholder="<?php echo htmlspecialchars($user_array['CONTACT'])?>" value="<?php echo htmlspecialchars($user_array['CONTACT'])?>">
 						<label for="email" >E-mail:</label>
 						<input type="text" name="email"  placeholder="<?php echo $user_array['EMAIL']?>" value="<?php echo $user_array['EMAIL']?>">
 						<button class="btn btn-primary" type="submit" name="update" value="true">修改</button>
@@ -242,9 +241,9 @@ else{
 					<label for="uid" >商家号:</label>
 					<input type="text" name="uid"  size='9' value="<?php echo $good_array['UID'];?>">
 					<label for="gname" >商品名:</label>
-					<input type="text" name="gname" size='8' placeholder="<?php echo $good_array['GNAME']?>" value="<?php echo $good_array['GNAME']?>">
+					<input type="text" name="gname" size='8' placeholder="<?php echo htmlspecialchars($good_array['GNAME'])?>" value="<?php echo htmlspecialchars($good_array['GNAME'])?>">
 					<label for="gprice" >商品价格:</label>
-					<input type="text" name="gprice"  size='4' placeholder="<?php echo $good_array['GPRICE'];?>" value="<?php echo $good_array['GPRICE']?>">
+					<input type="text" name="gprice"  size='4' placeholder="<?php echo htmlspecialchars($good_array['GPRICE'])?>" value="<?php echo htmlspecialchars($good_array['GPRICE'])?>">
 					<label for="ginfo" >商品信息:</label>
 					<input type="text" name="ginfo"  placeholder="<?php echo $good_array['GINFO']?>" value="<?php echo $good_array['GINFO']?>">
 					<button class="btn btn-primary" type="submit" name="update" value="true" >修改</button>
@@ -278,13 +277,13 @@ else{
 					while($order_array=mysqli_fetch_array($order_result)){
 				?><form action="/public/php/manage.php" method="post" >
 				<div class="form-group">
-					<?php echo "".$order_array['GNAME'];?>
-					<label for="oid" >订单号:</label>
-					<input type="text" name="oid" value="<?php echo $order_array['OID'];?>">
-					<label for="uid" >买家号:</label>
-					<input type="text" name="uid" value="<?php echo $order_array['UID'];?>">
-					<label for="gname" >商品号:</label>
-					<input type="text" name="gid"  placeholder="<?php echo $order_array['GID']?>" value="<?php echo $order_array['GID'];?>">
+					<label class="col-sm-2"><?php echo "".$order_array['GNAME'];?></label>
+					<label class="col-sm-1" for="oid" >订单号:</label>
+					<input class="col-sm-2" type="text" name="oid" value="<?php echo $order_array['OID'];?>">
+					<label class="col-sm-1" for="uid" >买家号:</label>
+					<input class="col-sm-2" type="text" name="uid" value="<?php echo $order_array['UID'];?>">
+					<label class="col-sm-1" for="gname" >商品号:</label>
+					<input class="col-sm-2" type="text" name="gid"  placeholder="<?php echo $order_array['GID']?>" value="<?php echo $order_array['GID'];?>">
 					<button class="btn btn-danger" type="submit" name="delete" value="true">删除</button>
 				</div>	</form>
 				<?php }?>

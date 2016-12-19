@@ -86,9 +86,6 @@ else{
                     echo '<li > <a href="/public/php/logout.php" >注销</a></li>';
             }
             else{
-                echo '<li > <a href="#login" data-toggle="modal" data-target="#login">登录</a></li>			
-			          <li >  <a href="#register" data-toggle="modal" data-target="#register">注册</a></li>';
-    
             }
             ?>
 		  </ul>

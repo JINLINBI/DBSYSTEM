@@ -3,7 +3,7 @@ include 'conn.php';		//连接数据库文件
 include 'checklevel.php';	//检查用户类型文件
 session_start();		//开始会话
 $msg='';			//需打印修改个人信息的变量
-$passwordmsg='';		//提示修改密码是否成功用到的变量
+$passwdmsg='';		//提示修改密码是否成功用到的变量
 if(!empty($_SESSION['username'])){		//判断是否登录
 	$username=$_SESSION['username'];	//提取用户名
 	$level=checklevel($conn,$username);	//检查用户类型
@@ -103,11 +103,11 @@ else{
 			<span style="color:red"><?php echo $msg;?></span>
 			<form action="/public/php/self.php" method="post" >
 				<div class="form-group">
-					<label for="contact" >联系方式:</label>
-					<input type="text" name="contact" placeholder="<?php echo $array['CONTACT'];?>" value="<?php echo $array['CONTACT'];?>">
+					<label  for="contact" class="col-sm-1">联系方式:</label>
+					<input  type="text" name="contact" placeholder="<?php echo $array['CONTACT'];?>" value="<?php echo $array['CONTACT'];?>">
 				</div>
 				<div class="form-group">
-					<label for="email" >E-mail:</label>
+					<label  for="email" class="col-sm-1" >E-mail:</label>
 					<input type="text" name="email"  placeholder="<?php echo $array['EMAIL']?>" value="<?php echo $array['EMAIL']?>">
 				</div>
 				<div class="form-group">
@@ -115,20 +115,21 @@ else{
 				</div>	
 			</form>
 		</div>
-		<div >
+		<div style="margin-top:40px">
 			<h3>修改密码</h3>
 			<span style="color:red"><?php echo $passwdmsg;?></span>
 			<form action="/public/php/self.php" method="post" >
 				<div class="form-group">
-					<label for="oldpassword" >旧密码:</label>
+					<label for="oldpassword" class="col-sm-1">旧密码:</label>
 					<input type="password" name="oldpassword" minlength="2" maxlength="20" >
 				</div>
 				<div class="form-group">
-					<label for="newpassword" >新密码:</label>
+					<label for="newpassword" class="col-sm-1">新密码:</label>
 					<input type="password" name="newpassword" minlength="2" maxlength="20" >
+					<div ></div>
 				</div>
 				<div class="form-group">
-					<label for="confirmpassword" >确认密码:</label>
+					<label for="confirmpassword" class="col-sm-1">确认密码:</label>
 					<input type="password" name="comfirmpassword" minlength="2" maxlength="20">
 				</div>
 				<div class="form-group">
@@ -142,13 +143,6 @@ else{
 		
 	</div>
 	<!-- 网页底部 -->
-	<footer class="footer">
-		<div class="container">
-		<p class="text-muted">
-		  <h2><a href="http://www.moyingliu.cn" title="www.moyingliu.cn" style="color: blue;">www.moyingliu.cn</a></h2>
-		</p>
-        </div>
-	</footer>
   </body>
     <script src="/public/js/jquery.min.js"></script>
 	<script src="/public/js/bootstrap.min.js"></script>

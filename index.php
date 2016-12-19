@@ -130,27 +130,48 @@ $result=mysqli_query($conn,"SELECT * FROM GOOD");
 			
 
 			<div class="goods" style="margin-top:30px">
-				
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>商品名</th>
+							<th>商品价格(元)</th>
+							<th>商品信息</th>
+							<th>商品商家信息</th>
+							<?php if($level==3)echo '<th>订购</th>'?>
+						</tr>
+					</thead>
 				<?php
 					while($good_array=mysqli_fetch_array($result)){
-				?><form action="/public/php/indexpro.php" method="post" >
-				<div class="form-group">
-					<input type="text" name="gid" value="<?php echo $good_array['GID'];?>" class="hidden">
-					<label for="gname" >商品名:</label>
-					<input type="text" name="gname"  value="<?php echo $good_array['GNAME']?>" placeholder="<?php echo $good_array['GNAME']?>">
-					<label for="gprice" >商品价格(元):</label>
-					<input type="text" name="gprice" size="4" value="<?php echo $good_array['GPRICE'];?>" placeholder="<?php echo $good_array['GPRICE'];?>">
-					<label for="ginfo" >商品信息:</label>
-					<input type="text" name="ginfo" size="62" value="<?php echo $good_array['GINFO']?>" placeholder="<?php echo $good_array['GINFO']?>">
-					<button class="btn btn-info" type="submit" name="getcontact" value="true">联系方式</button>
-					<?php if($level==3){
-						echo '<button class="btn btn-primary" type="submit" name="order" value="true" >订购</button>';
-					}
-					?>
-				</div>	</form>
-				<?php }?>
-				
-			
+				?>
+					<form action="/public/php/indexpro.php" method="post" >
+					<input type="text" name="gid" value="<?php echo $good_array['GID']?>" class="hidden"></span>
+					</tbody>
+						<tr>
+							<td>
+								<?php echo htmlspecialchars($good_array['GNAME'])?>
+							</td>
+							<td>
+								<?php echo htmlspecialchars($good_array['GPRICE'])?>
+							</td>
+							<td>
+								<?php echo htmlspecialchars($good_array['GINFO'])?>
+							</td>
+							<td>
+								<button class="btn btn-info" type="submit" name="getcontact" value="true">联系方式</button>
+							</td>
+	
+					<?php if($level==3)
+					echo '
+							<td>
+							<button class="btn btn-primary" type="submit" name="order" value="true" >订购</button>
+							</td></tr>
+						'
+						?>
+					</tbody>
+					</form>
+				<?php  }?>
+					
+				</table>	
 			</div>
                 <!-- 注册表单 -->
                 <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" id="register" aria-labelledby="myLargeModalLabel">
@@ -164,7 +185,7 @@ $result=mysqli_query($conn,"SELECT * FROM GOOD");
 				<div class="modal-body">
 
 				  <div class="form-group">
-					<label for="username" class="col-sm-4 control-label">昵称:</label>
+					<label for="re-username" class="col-sm-4 control-label">昵称:</label>
 					<div class="col-sm-6">
 					  <input type="text" class="form-control" name="username" id="username" minlength="2" maxlength="10" placeholder="用户昵称*:长度2-10位的数字,中文或英文字符"required="">
 					</div>
@@ -177,8 +198,6 @@ $result=mysqli_query($conn,"SELECT * FROM GOOD");
 					  <input type="text" class="form-control" id="code"  name="phone-numbers"  placeholder="手机号*" required maxlength="11" size="100">
 					</div>
 				  </div>
-					<div class="form-group">
-				
 				  <div class="form-group">
 					<label for="email" class="col-sm-4 control-label">Email:</label>
 					<div class="col-sm-6">
@@ -190,12 +209,12 @@ $result=mysqli_query($conn,"SELECT * FROM GOOD");
 				  <div class="form-group">
                       <div class="radio  col-sm-4" ></div>
 					<div class="radio  col-sm-3" >
-                        <label for="optionsRadios1" class="col-sm-10 control-label">普通用户  </label>
-	                    <input stype="margin-right:5px" type="radio" name="usertype" id="optionsRadios1" value="3" checked>     
+                        <label for="optionsRadios1" class="col-sm-6 control-label">普通用户  </label>
+	                    <input class="col-sm-4" style="margin-right:5px" type="radio" name="usertype" id="optionsRadios1" value="3" checked>     
                     </div>
-                    <div class="radio col-sm-2">
-                        <label for="optionsRadios2" class="col-sm-10 control-label">卖家   </label>
-                        <input stype="margin-right:5px" type="radio" name="usertype" id="optionsRadios2" value="2">
+                    <div class="radio col-sm-3">
+                        <label for="optionsRadios2" class="col-sm-6 control-label">卖家   </label>
+                        <input class="col-sm-4"style="margin-right:5px" type="radio" name="usertype" id="optionsRadios2" value="2">
 				    </div>
                     </div>
 
@@ -218,9 +237,13 @@ $result=mysqli_query($conn,"SELECT * FROM GOOD");
 				  </div>
 
 				  <div class="form-group">
-					<div class="col-sm-12">
-					  <img src="#" alt="" id="codeimg" >
-					  <a href="#" title="Switch">点击切换</a>
+					<label for="authcode" class="col-sm-4 control-label">验证码:</label>
+					<div class="col-sm-3">
+					  <input type="text" class="form-control" size="4" name="authcode" id="authcode" placeholder="验证码"  maxlength="4" required>
+					</div>
+					<div class="col-sm-3">
+					  <img src="/public/php/captcha.php" onclick="changing();" alt="加载验证码失败" id="codeimg1" name="code" >
+					  <label onclick="changing();" title="Switch">点击切换</label>
 					</div>
 				  </div>
 				</div>
@@ -258,15 +281,19 @@ $result=mysqli_query($conn,"SELECT * FROM GOOD");
 					</div>
 				  </div>
 				  <div class="form-group">
-					<div class="col-sm-12">
-					  <img src="#" alt="验证码加载失败" id="codeimg">
-					  <span>点击切换</span>
+					<label for="authcode" class="col-sm-4 control-label">验证码:</label>
+					<div class="col-sm-3">
+					  <input type="text" class="form-control"  name="authcode" id="authcode" placeholder="captcha"  maxlength="4" required>
+					</div>
+					<div class="col-sm-3">
+					  <img src="/public/php/captcha.php" alt="验证码加载失败" id="codeimg2" onclick="changing();" name="code">
+					  <label onclick="changing();" title="Switch">点击切换</label>
 					</div>
 				  </div> 
 				</div>
 				<div class="modal-footer">
-				  <button type="button" class="btn btn-default" data-dismiss="modal" style="float: left;">关闭</button>
-				  <input type="reset" class="btn btn-warning" value ="reset" />
+				  <button type="button" class="btn btn-default" data-dismiss="modal" style="float:left;">关闭</button>
+				  <input type="reset" class="btn btn-warning" value ="重置" />
 				  <button type="submit" class="btn btn-primary" name="login">登录</button>
 				</div>
 			</form>
@@ -280,6 +307,6 @@ $result=mysqli_query($conn,"SELECT * FROM GOOD");
   </body>
     <script src="/public/js/jquery.min.js"></script>
 	<script src="/public/js/bootstrap.min.js"></script>
-<script src="/public/js/vertify.js"></script>
+	<script src="/public/js/vertify.js"></script>
 	<script src="/public/js/check.js"></script>
 </html>
